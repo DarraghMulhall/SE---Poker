@@ -55,7 +55,7 @@ public class DeckOfCards {
 	
 	//removes next card to be dealt from deck and returns the card.
 	public PlayingCard dealNext(){
-		//if class variable cardsDealtCount == 52 then the deck is empty or only contains discarded cards, so no cards available - returns null
+		//if cardsDealtCount == 52 then the deck is empty or only contains discarded cards, so no cards available - returns null
 		if(cardsDealtCount == 52){
 			return null;
 		}
