@@ -30,6 +30,11 @@ public class PlayingCard {
 		return gameValue;
 	}
 	
+	//aids testing in other class
+	protected String getType(){
+		return type;
+	}
+	
 	//returns a string representation of the card - card type + card suit
 	public String toString() {
 		String str = this.type + Character.toString(this.suit);
