@@ -9,6 +9,8 @@ public class PlayingCard {
 	public static final char CLUBS = 'C';	
 	public static final char SPADES = 'S';	
 	
+	public static final int ACE_GAME_VAL = 14;
+	
 	private String type;
 	private char suit;
 	private int faceValue;

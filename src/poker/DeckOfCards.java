@@ -8,6 +8,8 @@ import java.util.Random;
 //class which contains an array of 52 cards to be used for a poker game
 public class DeckOfCards {
 	
+	private final static int FULL_DECK_SIZE = 52;
+	
 	private List<PlayingCard> deck;
 	//used to count number of cards that have been dealt, which when == 52 indicates no more available cards to deal
 	private int cardsDealtCount = 0;
@@ -44,9 +46,9 @@ public class DeckOfCards {
 	//gets two random indexes of the deck and swaps both cards at these indexes, does this deck-size squared number of times
 	public void shuffle(){
 		Random rand = new Random();
-		for(int i=0; i<52*52; i++){
-			int num1 = rand.nextInt(52);
-			int num2 = rand.nextInt(52);
+		for(int i=0; i<FULL_DECK_SIZE*FULL_DECK_SIZE; i++){
+			int num1 = rand.nextInt(FULL_DECK_SIZE);
+			int num2 = rand.nextInt(FULL_DECK_SIZE);
 			PlayingCard temp = deck.get(num1);
 			deck.set(num1, deck.get(num2));
 			deck.set(num2, temp);
@@ -56,7 +58,7 @@ public class DeckOfCards {
 	//removes next card to be dealt from deck and returns the card.
 	public PlayingCard dealNext(){
 		//if cardsDealtCount == 52 then the deck is empty or only contains discarded cards, so no cards available - returns null
-		if(cardsDealtCount == 52){
+		if(cardsDealtCount == FULL_DECK_SIZE){
 			return null;
 		}
 		PlayingCard temp = deck.remove(0);
@@ -74,7 +76,7 @@ public class DeckOfCards {
 		deck_test.reset();
 		 
 		//deals each card then prints it
-        for (int i = 0; i < 52; i++) {
+        for (int i = 0; i < FULL_DECK_SIZE; i++) {
             PlayingCard card = deck_test.dealNext();
             System.out.println(i + " " + card);
             //returns 6 discarded cards overall at indexes 0, 10, 20, 30, 40, 50
@@ -90,7 +92,7 @@ public class DeckOfCards {
         
         //making sure all cards are available to be dealt after deck is reset
         deck_test.reset();
-        for (int i = 0; i < 52; i++) {
+        for (int i = 0; i < FULL_DECK_SIZE; i++) {
             PlayingCard card = deck_test.dealNext();
             System.out.println(i + " " + card);
         }
