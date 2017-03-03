@@ -406,6 +406,7 @@ public class HandOfCards {
 	private boolean isTwoCardsBreakingStraight(int pos1, int pos2){
 		boolean yes = false;
 		ArrayList<PlayingCard> temp = new ArrayList<PlayingCard>();
+		//gets list of cards excluding the two at the arg positions
 		for(int i=0; i<hand.size(); i++){
 			if(hand.get(i).getGameValue() == hand.get(pos1).getGameValue() || hand.get(i).getGameValue() == hand.get(pos2).getGameValue()) {
 				continue;
@@ -434,7 +435,7 @@ public class HandOfCards {
 	//checks if hand is a broken straight - off by one
 	private boolean isBrokenStraight(){
 		for(int i=0; i<HAND_SIZE; i++){
-			if(isBrokenStraightCard(i)){
+			if(isBreakingStraightCard(i)){
 				return true;
 			}
 		}
@@ -443,26 +444,29 @@ public class HandOfCards {
 	
 	
 	//checks if card at specific index is breaking the straight
-	private boolean isBrokenStraightCard(int cardPosition){
+	private boolean isBreakingStraightCard(int cardPosition){
 			boolean yes = false;
 			
 			ArrayList<PlayingCard> temp = new ArrayList<PlayingCard>();
 			
+			//get list of cards excluding the one at the cardPosition
 			for(int i=0; i<hand.size(); i++){
 				if(i == cardPosition) {
 					continue;
 				}
 				temp.add(hand.get(i));
 			}
+			
 			int total_diff = Math.abs(temp.get(0).getGameValue() - temp.get(1).getGameValue()) + Math.abs(temp.get(1).getGameValue() - temp.get(2).getGameValue())
 					+ Math.abs(temp.get(2).getGameValue() - temp.get(3).getGameValue());
 			
+			//if the total difference is 3 or 4 then this signifies the card is breaking a straight
 			if(total_diff<=4){
 				yes = true;
 			}
 			
 			
-			//in case of ace low broken straight
+			//in case of ace low broken straight - use face value to check total_diff
 			if(yes == false) {
 				total_diff = Math.abs(temp.get(0).getFaceValue() - temp.get(3).getFaceValue()) + Math.abs(temp.get(1).getFaceValue() - temp.get(2).getFaceValue())
 						+ Math.abs(temp.get(2).getFaceValue() - temp.get(3).getFaceValue());
@@ -473,44 +477,48 @@ public class HandOfCards {
 		return yes;
 	}
 	
-	private PlayingCard getLowestBrokenStraightCard(){
+	//returns the lowest value card that is breaking the straight
+	private PlayingCard getLowestCardThatBreaksStraight(){
 		PlayingCard lowest = null;
 		
-		if(isBrokenStraightCard(4)){
+		if(isBreakingStraightCard(4)){
 			lowest = hand.get(4);
 		}
 		
-		else if(isBrokenStraightCard(3)){
+		else if(isBreakingStraightCard(3)){
 			lowest = hand.get(3);
 		}
 		
-		else if(isBrokenStraightCard(2)){
+		else if(isBreakingStraightCard(2)){
 			lowest = hand.get(2);
 		}
 		
-		else if(isBrokenStraightCard(1)){
+		else if(isBreakingStraightCard(1)){
 			lowest = hand.get(1);
 		}
 		
-		else if(isBrokenStraightCard(0)){
+		else if(isBreakingStraightCard(0)){
 			lowest = hand.get(0);
 		}
 		return lowest;
 	}
 	
+	//checks if hand is a busted flush
 	private boolean isBustedFlush(){
 		for(int i=0; i<HAND_SIZE; i++){
-			if(isBustedFlushCard(i)){
+			if(isBustingFlushCard(i)){
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private boolean isBustedFlushCard(int cardPosition){
+	//checks if the card at the position is busting the flush
+	private boolean isBustingFlushCard(int cardPosition){
 		
 		ArrayList<PlayingCard> temp = new ArrayList<PlayingCard>();
 		
+		//get list of cards excluding the one at the cardPosition
 		for(int i=0; i<hand.size(); i++){
 			if(i == cardPosition) {
 				continue;
@@ -527,15 +535,16 @@ public class HandOfCards {
 		return false;
 	}
 	
-	//
-	private PlayingCard getBustedFlushCard(){
-		PlayingCard lowest = null;
+	//gets the card thats busting the flush
+	private PlayingCard getBustingFlushCard(){
+		PlayingCard buster = null;
 		for(int i=0; i<HAND_SIZE; i++){
-			if(isBustedFlushCard(i)){
-				lowest = hand.get(i);
+			if(isBustingFlushCard(i)){
+				buster = hand.get(i);
+				break;
 			}
 		}
-		return lowest;
+		return buster;
 	}
 	
 	//returns if an ace is in the hand
@@ -549,6 +558,7 @@ public class HandOfCards {
 		return found;
 	}
 	
+	//returns the probability of improving/not weakening the hand by discarding a card
 	public int getDiscardProbability(int cardPosition){
 		
 		int prob = 0;
@@ -556,7 +566,7 @@ public class HandOfCards {
 		if(isHighHand()){
 			//if busted flush, discard the card that busts the flush
 			if(isBustedFlush()){
-				if(hand.get(cardPosition).getGameValue() == getBustedFlushCard().getGameValue()){
+				if(hand.get(cardPosition).getGameValue() == getBustingFlushCard().getGameValue()){
 					prob = 100;
 				}
 				else {
@@ -565,7 +575,7 @@ public class HandOfCards {
 			}
 			//if broken straight discard the lowest value card that breaks the straight (there can be multiple cards breaking the straight)
 			else if(isBrokenStraight()) {
-					if(hand.get(cardPosition).getGameValue() == getLowestBrokenStraightCard().getGameValue()){
+					if(hand.get(cardPosition).getGameValue() == getLowestCardThatBreaksStraight().getGameValue()){
 						prob = 100;
 					}
 					else {
@@ -584,6 +594,7 @@ public class HandOfCards {
 			}
 			//if broken straight by two cards, discard the lowest 2 value cards that when combined break the straight
 			else if(isBrokenStraightByTwoCards()){
+				System.out.println("ah now");
 				if(hand.get(cardPosition).getGameValue() == getLowestTwoCardsThatBreakStraight().get(0).getGameValue() 
 						|| hand.get(cardPosition).getGameValue() == getLowestTwoCardsThatBreakStraight().get(1).getGameValue()){
 					prob = 100;
@@ -592,8 +603,8 @@ public class HandOfCards {
 					prob = 0;
 				}
 			}
-			//remove the lowest 2 cards if no possible potential hands
-			else if(cardPosition == 3 || cardPosition == 4){
+			//remove the lowest 3 cards if no possible potential hands
+			else if(cardPosition == 2 || cardPosition == 3 || cardPosition == 4){
 				prob = 100;
 			}
 		}
@@ -650,7 +661,10 @@ public class HandOfCards {
 			}
 			//no busted flush or broken straight so discard lowest two non pair cards
 			else {
-				if(hand.get(cardPosition).getGameValue() == otherCards.get(1).getGameValue()){
+				if(hand.get(cardPosition).getGameValue() == otherCards.get(0).getGameValue()){
+					prob = 100;
+				}
+				else if(hand.get(cardPosition).getGameValue() == otherCards.get(1).getGameValue()){
 					prob = 100;
 				}
 				else if(hand.get(cardPosition).getGameValue() == otherCards.get(2).getGameValue()){
@@ -708,7 +722,7 @@ public class HandOfCards {
 			//give probability of improving the hand to a flush, when discarding the busting flush card
 			if(isBustedFlush()){
 				//if card at position busts flush, then calculate probability of getting flush by discarding this card
-				if(hand.get(cardPosition).getGameValue() == getBustedFlushCard().getGameValue()){
+				if(hand.get(cardPosition).getGameValue() == getBustingFlushCard().getGameValue()){
 					//10 possible cards left in suit to possibly draw
 					prob = (int) ((10.0/47.0) * 100);
 				}
@@ -727,7 +741,7 @@ public class HandOfCards {
 			//if one off a straight, straight flush in this situation
 			if(isBrokenStraight()){
 				//if card at position is the card that breaks the straight flush
-				if(hand.get(cardPosition).getGameValue() == getLowestBrokenStraightCard().getGameValue()){
+				if(hand.get(cardPosition).getGameValue() == getLowestCardThatBreaksStraight().getGameValue()){
 					//only 1 specific card possible
 					if(handContainsAce()){
 						prob = (int) ((1.0/47.0) * 100.0);
@@ -1579,14 +1593,14 @@ public class HandOfCards {
 		}
 		System.out.println("\n");
 		
-		System.out.println("No potential hands so discard lowest two");
+		System.out.println("No potential hands so discard lowest three");
 		test_hand = new HandOfCards(deck);
 		test_hand.hand.clear();
 		test_hand.hand = new ArrayList<PlayingCard>();
-		test_hand.hand.add(new PlayingCard("A", PlayingCard.CLUBS, 1, 14));
+		test_hand.hand.add(new PlayingCard("2", PlayingCard.CLUBS, 2, 2));
 		test_hand.hand.add(new PlayingCard("K", PlayingCard.DIAMONDS, 13, 13));
 		test_hand.hand.add(new PlayingCard("3", PlayingCard.SPADES, 3, 3));
-		test_hand.hand.add(new PlayingCard("7", PlayingCard.CLUBS, 7, 7));
+		test_hand.hand.add(new PlayingCard("8", PlayingCard.CLUBS, 8, 8));
 		test_hand.hand.add(new PlayingCard("J", PlayingCard.HEARTS, 11, 11));
 		test_hand.sort();
 		System.out.println(test_hand);
